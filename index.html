@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <title>Beautiful Places In Bengaluru</title>
+    <link rel="stylesheet" href="css/styling.css">
+    <link rel="stylesheet" href="css/bootstrap.css">
+
+  </head>
+  <body>
+    <!-- the heading coloumn -->
+    <header class="coloumn">
+      <h1>Beautiful Places In Bengaluru </h1>
+    </header>
+    <!-- the filter positions -->
+
+      <div class="col-md-2">
+        <h2>Filter</h2>
+            <div class=search-box>
+                <!-- using knockout javascript -->
+                  <input type="text" placeholder="Search...." data-bind="textInput: query" id="city" >
+            </div>
+              <!-- display of list using knockout script -->
+              <div id="list">
+                <ul data-bind="foreach: search">
+                    <li data-bind="text: title, click: $parent.click"> </li>
+                </ul>
+            </div>
+          </div>
+<!-- loading map in 75%of the screen -->
+  <div id="map" class="col-md-10">
+  </div>
+
+  <form id="form-container" class="form-container">  </form>
+    <div class="wikipedia-container">
+        <h3 id="wikipedia-header">Relevant Wikipedia Links</h3>
+        <ul id="wikipedia-links">click on the marker you will find the relevant wikipidia info link</ul>
+    </div>
+
+  <!-- loading the javascript files -->
+    <script src="js/knockout1.js"></script>
+    <script src="js/jquery.min.js"></script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?libraries=placeskey=AIzaSyCfLr4M-_4WroDzu68txxmP56so9mJVkLw&v=3&callback=initMap" onerror='googleError()'></script>
+    <script src="js/appi.js"></script>
+  </body>
+</html>
