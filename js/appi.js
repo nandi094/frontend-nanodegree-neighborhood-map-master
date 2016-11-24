@@ -1,5 +1,6 @@
 'use strict'
   var map;
+
   var markers = [];
   var locations = [
     {title:'ISKCON Temple',
@@ -61,8 +62,8 @@ function initMap(){
         infowindow.setContent('<div>' + marker.title +'</div>'+
         '<div>'+'The Details of '+ marker.title +'</div>'+'<p>Attribution:'+ marker.title+' <a href="https://en.wikipedia.org/w/index.php?title='+marker.title+'">'+
               'https://en.wikipedia.org/w/index.php?title='+marker.title+'</a> '+
-              '</p>'+
-        '<div>'+'Details By Wikipedia'+'</div>');
+              '</p>'+'<div>'+'Details By Wikipedia'+'</div>');
+
         infowindow.open(map, marker);
           infowindow.addListener('closeclick', function() {
             infowindow.marker = null;
@@ -93,12 +94,13 @@ var AppViewModel = function() {
     self.title = ko.observable();
     // self.marker = ko.observableArray([]);
       self.locations = ko.observable(locations);
-      self.click = function(locations,marker) {
+      self.click = function(locations,marker,locationObject) {
         map.setZoom(15 );
         map.setCenter(locations.location);
-        google.maps.event.trigger(locations.marker, 'click')
+        //this event not happening while i click list element
+        google.maps.event.trigger(locations.locationObject, 'click');
+        // google.maps.event.trigger(loadData.details, 'click');
         };
-
       self.query = ko.observable('');
      //for filter operations
       self.search = ko.computed(function() {
@@ -115,31 +117,30 @@ var AppViewModel = function() {
         return newArray;
       });
     };
-    function loadData(marker,details) {
+function loadData() {
+  var $wikiElem = $('#wikipedia-links');
+    $wikiElem.text("");
+  var wikiUrl = 'http://en.wikipedia.org/w/api.php?action=opensearch&search=' + locationObject.title + '&format=json&callback=wikiCallback';
+    var wikiRequestTimeout = setTimeout(function(){
+        $wikiElem.text("failed to get wikipedia resources");
+    }, 8000);
 
-
-
-
-        var marker=marker;
-
-        // load streetview
-
-        var wikiUrl = 'http://en.wikipedia.org/w/api.php?action=opensearch&search=' + marker.title + '&format=json';
-        var wikiRequestTimeout = setTimeout(function() {
-         details("failed to get wikipedia resources");
-        }, 10000);
-        $.ajax({
-            url: wikiUrl,
-            dataType: "jsonp",
-        }).success(function(response) {
+    $.ajax({
+        url: wikiUrl,
+        dataType: "jsonp",
+        jsonp: "callback",
+        success: function( response ) {
             var articleList = response[1];
-            var marker = marker;
+
             for (var i = 0; i < articleList.length; i++) {
                 articleStr = articleList[i];
                 var url = 'http://en.wikipedia.org/wiki/' + articleStr;
-             details('<li><a href="' + url + '">' + articleStr + '</a></li>');
-            }
+                $wikiElem.append('<li><a href="' + url + '">' + articleStr + '</a></li>');
+            };
+
             clearTimeout(wikiRequestTimeout);
-        });
-        return false;
-    }
+        }
+    });
+
+    return false;
+};
